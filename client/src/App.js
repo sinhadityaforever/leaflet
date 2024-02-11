@@ -8,6 +8,7 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import axios from 'axios';
+import polyline from '@mapbox/polyline';
 
 function App() {
 	const start = [40.7128, -74.006]; // New York City
@@ -61,10 +62,7 @@ function App() {
 				return (
 					<Polyline
 						key={index}
-						positions={route.geometry.coordinates.map((coord) => [
-							coord[1],
-							coord[0]
-						])}
+						positions={polyline.decode(route.geometry)}
 						color={index === selectedRouteIndex ? 'blue' : 'gray'}
 						onClick={() => selectRoute(index)}
 					/>
