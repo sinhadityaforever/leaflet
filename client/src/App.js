@@ -9,10 +9,11 @@ import {
 import L from 'leaflet';
 import axios from 'axios';
 import polyline from '@mapbox/polyline';
+import 'leaflet/dist/leaflet.css';
 
 function App() {
-	const start = [40.7128, -74.006]; // New York City
-	const end = [34.0522, -118.2437];
+	const start = [12.9527962, 77.7025624]; // New York City
+	const end = [12.97440549406668, 77.60777701563926];
 	const [routes, setRoutes] = useState([]);
 	const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
 	const [position, setPosition] = useState(start);
@@ -21,11 +22,12 @@ function App() {
 		async function fetchRoutes() {
 			try {
 				const response = await axios.get(
-					`http://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}`
+					`http://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?alternatives=true`
 				);
+				console.log(response);
 				setRoutes(response.data.routes);
 			} catch (error) {
-				console.error('Error fetching routes:', error);
+				console.log(error);
 			}
 		}
 
@@ -33,7 +35,7 @@ function App() {
 	}, [start, end]);
 
 	useEffect(() => {
-		// Update position in real-time
+		//Update position in real-time
 		const timer = setInterval(() => {
 			// Calculate new position based on distance covered
 			// For demo purpose, we're just updating position by a random value
@@ -52,18 +54,22 @@ function App() {
 	};
 
 	return (
-		<MapContainer center={position} zoom={13} style={{ height: '400px' }}>
+		<MapContainer
+			center={position}
+			zoom={100}
+			style={{ height: '100vh', width: '100vw' }}
+		>
 			<TileLayer
-				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 			/>
 			{routes.map((route, index) => {
-				console.log(route);
 				return (
 					<Polyline
 						key={index}
 						positions={polyline.decode(route.geometry)}
-						color={index === selectedRouteIndex ? 'blue' : 'gray'}
+						color={index === selectedRouteIndex ? 'blue' : 'red'}
+						// color="red"
 						onClick={() => selectRoute(index)}
 					/>
 				);
